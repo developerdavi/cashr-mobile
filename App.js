@@ -1,21 +1,37 @@
+/* eslint-disable no-undef */
+import React, {
+  lazy, Suspense, useEffect, useState
+} from 'react';
+import * as Font from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text } from 'react-native';
+
+const Routes = lazy(() => import('./src/Routes'));
 
 export default function App() {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      await Font.loadAsync({
+        MontserratRegular: require('./src/Assets/Fonts/Montserrat-Regular.ttf'),
+        MontserratMedium: require('./src/Assets/Fonts/Montserrat-Medium.ttf'),
+        MontserratBold: require('./src/Assets/Fonts/Montserrat-Bold.ttf')
+      });
+      setLoaded(true);
+    })();
+  }, []);
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <Suspense fallback={<Text>Loading...</Text>}>
+        <Routes />
+      </Suspense>
+      <StatusBar style='light' />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
